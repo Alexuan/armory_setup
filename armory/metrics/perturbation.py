@@ -9,7 +9,6 @@ import numpy as np
 from armory.logs import log
 from armory.metrics.common import MetricNameSpace, as_batch, set_namespace
 
-
 element = MetricNameSpace()
 batch = MetricNameSpace()
 
@@ -18,7 +17,7 @@ def batchwise(metric, name=None):
     """
     Register a batch metric and register a batchwise version of it
     """
-    return set_namespace(batch, metric, name=name)
+    return set_namespace(batch, metric, name=name, set_global=True)
 
 
 def elementwise(metric, name=None):

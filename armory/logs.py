@@ -20,17 +20,19 @@
 # be considered redundant, but I don't expect the near-duplication to be particularly
 # costly.
 
-import sys
 import datetime
-import loguru
-import logging
-from typing import List
 import functools
+import logging
 import os
+import sys
+from typing import List
+
+import loguru
 
 log = loguru.logger
 
 log.level("PROGRESS", no=15, color="<blue>", icon="\N{downwards quadruple arrow}")
+log.level("METRIC", no=24, color="<blue>", icon="\N{downwards quadruple arrow}")
 
 default_message_filters = {
     "": "WARNING",
