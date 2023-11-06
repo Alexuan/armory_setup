@@ -8,7 +8,29 @@ import numpy as np
 import tensorflow as tf
 
 from armory.data import datasets
+from armory.data.adversarial import (  # noqa: F401
+    dapricot_dev,
+    dapricot_test,
+    gtsrb_bh_poison_micronnet,
+)
+from armory.data.adversarial import (  # noqa: F401
+    resisc45_densenet121_univpatch_and_univperturbation_adversarial_224x224,
+    ucf101_mars_perturbation_and_patch_adversarial_112x112,
+)
+from armory.data.adversarial import apricot_dev, apricot_test  # noqa: F401
+from armory.data.adversarial import carla_mot_dev as cmotd  # noqa: F401
+from armory.data.adversarial import carla_mot_test as cmott  # noqa: F401
+from armory.data.adversarial import carla_obj_det_dev as codd  # noqa: F401
+from armory.data.adversarial import carla_obj_det_test as codt  # noqa: F401
+from armory.data.adversarial import carla_over_obj_det_dev as coodd  # noqa: F401
+from armory.data.adversarial import carla_over_obj_det_test as coodt  # noqa: F401
+from armory.data.adversarial import carla_video_tracking_dev as cvtd  # noqa: F401
+from armory.data.adversarial import carla_video_tracking_test as cvtt  # noqa: F401
+from armory.data.adversarial import imagenet_adversarial as IA  # noqa: F401
+from armory.data.adversarial import librispeech_adversarial as LA  # noqa: F401
 from armory.data.adversarial.apricot_metadata import ADV_PATCH_MAGIC_NUMBER_LABEL_ID
+
+# Although these imports are unreferenced in this file, they are required for tfds to know they exist.
 
 imagenet_adversarial_context = datasets.ImageContext(x_shape=(224, 224, 3))
 librispeech_adversarial_context = datasets.AudioContext(
@@ -661,15 +683,15 @@ def carla_over_obj_det_dev(
     **kwargs,
 ):
     """
-    Dev set for CARLA object detection dataset, containing RGB and depth channels. The dev
+    Dev set for CARLA overhead object detection dataset, containing RGB and depth channels. The dev
     set also contains green screens for adversarial patch insertion.
     """
     if "class_ids" in kwargs:
         raise ValueError(
-            "Filtering by class is not supported for the carla_obj_det_dev dataset"
+            "Filtering by class is not supported for the carla_over_obj_det_dev dataset"
         )
     if batch_size != 1:
-        raise ValueError("carla_obj_det_dev batch size must be set to 1")
+        raise ValueError("carla_over_obj_det_dev batch size must be set to 1")
 
     modality = kwargs.pop("modality", "rgb")
     if modality not in ["rgb", "depth", "both"]:
@@ -699,7 +721,7 @@ def carla_over_obj_det_dev(
     )
 
     return datasets._generator_from_tfds(
-        "carla_over_obj_det_dev:1.0.0",
+        "carla_over_obj_det_dev:2.0.1",
         split=split,
         batch_size=batch_size,
         epochs=epochs,
@@ -717,7 +739,7 @@ def carla_over_obj_det_dev(
 
 
 def carla_over_obj_det_test(
-    split: str = "test",
+    split: str = "test_hallucination",
     epochs: int = 1,
     batch_size: int = 1,
     dataset_dir: str = None,
@@ -729,15 +751,15 @@ def carla_over_obj_det_test(
     **kwargs,
 ):
     """
-    Dev set for CARLA object detection dataset, containing RGB and depth channels. The test
+    Test set for CARLA overhead object detection dataset, containing RGB and depth channels. The test
     set also contains green screens for adversarial patch insertion.
     """
     if "class_ids" in kwargs:
         raise ValueError(
-            "Filtering by class is not supported for the carla_obj_det_test dataset"
+            "Filtering by class is not supported for the carla_over_obj_det_test dataset"
         )
     if batch_size != 1:
-        raise ValueError("carla_obj_det_test batch size must be set to 1")
+        raise ValueError("carla_over_obj_det_test batch size must be set to 1")
 
     modality = kwargs.pop("modality", "rgb")
     if modality not in ["rgb", "depth", "both"]:
@@ -767,7 +789,7 @@ def carla_over_obj_det_test(
     )
 
     return datasets._generator_from_tfds(
-        "carla_over_obj_det_test:1.0.0",
+        "carla_over_obj_det_test:2.0.0",
         split=split,
         batch_size=batch_size,
         epochs=epochs,
@@ -924,7 +946,7 @@ def carla_video_tracking_dev(
             "Filtering by class is not supported for the carla_video_tracking_dev dataset"
         )
     if batch_size != 1:
-        raise ValueError("carla_obj_det_dev batch size must be set to 1")
+        raise ValueError("carla_video_tracking_dev batch size must be set to 1")
 
     if max_frames:
         clip = datasets.ClipFrames(max_frames)
@@ -975,10 +997,10 @@ def carla_video_tracking_test(
     """
     if "class_ids" in kwargs:
         raise ValueError(
-            "Filtering by class is not supported for the carla_video_tracking_dev dataset"
+            "Filtering by class is not supported for the carla_video_tracking_test dataset"
         )
     if batch_size != 1:
-        raise ValueError("carla_obj_det_dev batch size must be set to 1")
+        raise ValueError("carla_video_tracking_test batch size must be set to 1")
 
     if max_frames:
         clip = datasets.ClipFrames(max_frames)
@@ -1170,7 +1192,7 @@ def carla_multi_object_tracking_dev(
     )
 
     return datasets._generator_from_tfds(
-        "carla_mot_dev:1.0.0",
+        "carla_mot_dev:1.0.1",
         split=split,
         epochs=epochs,
         batch_size=batch_size,
@@ -1231,7 +1253,7 @@ def carla_multi_object_tracking_test(
     )
 
     return datasets._generator_from_tfds(
-        "carla_mot_test:1.0.0",
+        "carla_mot_test:1.0.1",
         split=split,
         epochs=epochs,
         batch_size=batch_size,

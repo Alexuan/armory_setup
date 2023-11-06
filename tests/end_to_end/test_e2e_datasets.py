@@ -706,33 +706,36 @@ def test_carla_overhead_obj_det_dev():
 
 def test_carla_overhead_obj_det_test():
 
-    ds_rgb = adversarial_datasets.carla_over_obj_det_test(split="test", modality="rgb")
-    ds_depth = adversarial_datasets.carla_over_obj_det_test(
-        split="test", modality="depth"
-    )
-    ds_multimodal = adversarial_datasets.carla_over_obj_det_test(
-        split="test", modality="both"
-    )
+    for split in ["test_hallucination", "test_disappearance"]:
+        ds_rgb = adversarial_datasets.carla_over_obj_det_test(
+            split=split, modality="rgb"
+        )
+        ds_depth = adversarial_datasets.carla_over_obj_det_test(
+            split=split, modality="depth"
+        )
+        ds_multimodal = adversarial_datasets.carla_over_obj_det_test(
+            split=split, modality="both"
+        )
 
-    for i, ds in enumerate([ds_multimodal, ds_rgb, ds_depth]):
-        assert ds.size == 15
-        for x, y in ds:
-            if i == 0:
-                assert x.shape == (1, 960, 1280, 6)
-            else:
-                assert x.shape == (1, 960, 1280, 3)
+        for i, ds in enumerate([ds_multimodal, ds_rgb, ds_depth]):
+            assert ds.size == 25
+            for x, y in ds:
+                if i == 0:
+                    assert x.shape == (1, 960, 1280, 6)
+                else:
+                    assert x.shape == (1, 960, 1280, 3)
 
-            y_object, y_patch_metadata = y
-            assert isinstance(y_object, dict)
-            for obj_key in ["labels", "boxes", "area"]:
-                assert obj_key in y_object
-            assert isinstance(y_patch_metadata, dict)
-            for patch_key in [
-                "avg_patch_depth",
-                "gs_coords",
-                "mask",
-            ]:
-                assert patch_key in y_patch_metadata
+                y_object, y_patch_metadata = y
+                assert isinstance(y_object, dict)
+                for obj_key in ["labels", "boxes", "area"]:
+                    assert obj_key in y_object
+                assert isinstance(y_patch_metadata, dict)
+                for patch_key in [
+                    "avg_patch_depth",
+                    "gs_coords",
+                    "mask",
+                ]:
+                    assert patch_key in y_patch_metadata
 
 
 def test_carla_video_tracking_dev():
@@ -871,6 +874,32 @@ def test_carla_multi_object_tracking_test():
         assert isinstance(y_patch_metadata, dict)
         for key in ["gs_coords", "masks"]:
             assert key in y_patch_metadata
+
+
+def test_minicoco():
+
+    train_size = 10349
+    dataset = datasets.minicoco(
+        split="train",
+    )
+    assert dataset.size == train_size
+
+    val_size = 434
+    dataset = datasets.minicoco(
+        split="validation",
+    )
+    assert dataset.size == val_size
+
+    for i in range(8):
+        x, y = dataset.get_batch()
+        assert x.shape[0] == 1
+        assert x.shape[-1] == 3
+        assert isinstance(y, list)
+        assert len(y) == 1
+        y_dict = y[0]
+        assert isinstance(y_dict, dict)
+        for obj_key in ["labels", "boxes", "area"]:
+            assert obj_key in y_dict
 
 
 def test_variable_length(armory_dataset_dir):
